@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-      <title>COINEX | 회원가입</title>
+      <title>Hustler</title>
       <!-- Favicon -->
       <link rel="shortcut icon" href="{{asset('user_assets/images/favicon.ico')}}" />
       <link rel="stylesheet" href="{{asset('user_assets/css/libs.min.css')}}">
@@ -27,7 +27,7 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="auth-form">
-                                <h2 class="text-center mb-4">로그인</h2>
+                                <h2 class="text-center mb-4">LOG IN</h2>
                                 <form  method="POST" action="{{ route('login') }}">
                                 @csrf
                                     <p></p>
