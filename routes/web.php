@@ -113,10 +113,10 @@ Route::middleware('admin')->prefix('admin')->name('admin.')->group(
         Route::get('state/edit/{coinId}',            [App\Http\Controllers\Admin\Coin\CoinController::class, 'edit'])->name('coin.edit');
         Route::post('state/edit/{coinId}',           [App\Http\Controllers\Admin\Coin\CoinController::class, 'save'])->name('coin.save');
         //Card
-        Route::get('card/list',                     [App\Http\Controllers\Admin\Coin\CoinController::class, 'index'])->name('coin.list');
-        Route::post('card/state/{id}',              [App\Http\Controllers\Admin\Coin\CoinController::class, 'state'])->name('coin.state');
-        Route::get('card/edit/{coinId}',            [App\Http\Controllers\Admin\Coin\CoinController::class, 'edit'])->name('coin.edit');
-        Route::post('card/edit/{coinId}',           [App\Http\Controllers\Admin\Coin\CoinController::class, 'save'])->name('coin.save');
+        Route::get('card/list',                     [App\Http\Controllers\Admin\Card\CardController::class, 'index'])->name('card.list');
+        Route::post('card/state/{id}',              [App\Http\Controllers\Admin\Card\CardController::class, 'state'])->name('card.state');
+        Route::get('card/edit/{coinId}',            [App\Http\Controllers\Admin\Card\CardController::class, 'edit'])->name('card.edit');
+        Route::post('card/edit/{coinId}',           [App\Http\Controllers\Admin\Card\CardController::class, 'save'])->name('card.save');
         //sell
         Route::get('calculate/trading',             [App\Http\Controllers\Admin\Calculate\TradingController::class, 'index'])->name('calculate.trading_list');
         Route::get('calculate/trading_edit/{id}',   [App\Http\Controllers\Admin\Calculate\TradingController::class, 'edit'])->name('calculate.trading_edit');

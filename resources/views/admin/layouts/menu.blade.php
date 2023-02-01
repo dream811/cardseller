@@ -39,19 +39,19 @@
 							<li class="nav-item">
 								<a href="{{ route('admin.credit.list') }}" class="nav-link {{ (request()->routeIs('admin.credit.list')) ? 'active' : '' }}">
 									<i class="far fa-circle nav-icon"></i>
-									<p>Credit Management</p>
+									<p>Credit list</p>
 								</a>
 							</li>
 						</ul>
 						
 					</li>
-                    <li class="nav-item {{ (request()->routeIs('admin.coin*')) ? 'menu-open' : '' }}">
-						<a href="#" class="nav-link {{ (request()->routeIs('admin.coin*')) ? 'active' : '' }}"> <i class="fas fa-coins"></i>
+                    <li class="nav-item {{ (request()->routeIs('admin.card*')) ? 'menu-open' : '' }}">
+						<a href="#" class="nav-link {{ (request()->routeIs('admin.card*')) ? 'active' : '' }}"> <i class="fas fa-coins"></i>
 							<p> Card Management <i class="right fas fa-angle-left"></i> </p>
 						</a>
 						<ul class="nav nav-treeview">
 							<li class="nav-item">
-								<a href="/admin/coin/list" class="nav-link {{ (request()->routeIs('admin.coin.list')) ? 'active' : '' }}">
+								<a href="/admin/card/list" class="nav-link {{ (request()->routeIs('admin.card.list')) ? 'active' : '' }}">
 									<i class="far fa-circle nav-icon"></i>
 									<p>Card List</p>
 								</a>

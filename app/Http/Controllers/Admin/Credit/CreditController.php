@@ -69,39 +69,45 @@ class CreditController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function show($id)
+    public function edit($id)
     {
+        $title = "Edit";
         $creditInfo = Credit::firstOrNew(['id' => $id]);
 
-        return view('admin.user.ChargeDetail', compact('creditInfo', 'id'));
+        return view('admin.credit.detail', compact('creditInfo', 'id', 'title'));
     }
     //save
     public function save($id, Request $request)
     {
 
         $credit = Credit::find($id);
-        $user = User::where('mb_id', $credit->user_id)->first();
+        $user = User::find($credit->user_id);
         $money = $user->money;
         $status = $request->post('status');
+        $amount = $request->post('amount');
         if ($status == "PAID") {
-            $money += $submoney->money;
-            $user->update(['mb_money' => $money]);
-        } else if ($status == "OPENED") {
-            $money += $submoney->mo_money;
-            $user->update(['mb_money' => $money]);
-        } else if($status == "CLOSED") {
-
+            if($credit->status !="PAID"){
+                $money += $amount;
+                $user->update(['money' => $money]);
+            }else{
+                $money = $money -$credit->amount + $amount;
+                $user->update(['money' => $money]);
+            }
+        } else if ($status == "OPENED" || $status == "CLOSED") {
+            if($credit->status !="PAID"){
+                $money -= $amount;
+                $user->update(['money' => $money]);
+            }
         }
-        $content = $confirm == 1 ? "accept" : "cancel";
-        Money::where('mo_id', $id)->update(
+        Credit::where('id', $id)->update(
             [
-                'mo_state' => $confirm
+                'status' => $status,
+                'amount' => $amount
             ]
         );
 
 
-        $data = '<script>alert("' . $content . 'ss.");window.opener.location.reload();window.close();</script>';
-        return view('test', compact('data'));
+        return response()->json(["status" => "success", "data" => $credit]);
     }
     // delete
     public function delete($id, Request $request)
@@ -113,9 +119,9 @@ class CreditController extends Controller
             if ($user->money < $credit->amount ) {
                 return response()->json(["status" => "failed", "data" => 'User\'s current money isn\'t enough.']);
             }
-            $user->update(['money' => $user->money - $money->amount]);
+            $user->update(['money' => $user->money - $credit->amount]);
         }
-        $money->delete();
+        $credit->delete();
         return response()->json(["status" => "success", "data" => 'Successfully deleted.']);
     }
 

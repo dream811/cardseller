@@ -87,22 +87,17 @@
             responsive: true, lengthChange: true,
             buttons: ["copy", "csv", "excel", "pdf", "print", "colvis"]
         }).buttons().container().appendTo('#coinTable_wrapper .col-md-6:eq(0)');
-        // $('body').on('click', '.btnEdit', function () {
-        //     var coinId = $(this).attr('data-id');
-        //     window.open('/admin/coin/edit/' + coinId, '정보 수정', 'scrollbars=1, resizable=1, width=1000, height=620');
-        //     return false;
-        // });
         
         
         $('body').on('click', '.btnEdit', function () {
             var id = $(this).attr('data-id');
-            window.open('/admin/contact/msg/' + id, 'Edit', 'scrollbars=1, resizable=1, width=1000, height=620');
+            window.open('/admin/credit/edit/' + id, 'Edit', 'scrollbars=1, resizable=1, width=500, height=620');
             return false;
         });
         $('body').on('click', '.btnDelete', function () {
-            if(!confirm('한번삭제한 자료는 되살릴수 없습니다. 정말삭제하시겠습니까?')){return}
-            var msgId = $(this).attr('data-id');
-            var action = '/admin/contact/msg/' + msgId;
+            if(!confirm('You want to delete?')){return}
+            var id = $(this).attr('data-id');
+            var action = '/admin/credit/edit/' + id;
             
             $.ajax({
                 url: action,
@@ -112,9 +107,9 @@
                 success: function ({status, data}) {
                     if(status == "success"){
                         refreshTable();
-                        alert('쪽지가 삭제되었습니다.');
+                        alert('Successfully deleted.');
                     }else{
-                        alert('쪽지삭제에 실패하였습니다.');
+                        alert('Failed to delete.');
                     }
                 },
                 error: function (data) {

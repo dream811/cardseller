@@ -7,7 +7,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Credit;
+use App\Models\Setting;
 use Carbon\Carbon;
+use App\MyLib\Apirone;
 use Yajra\DataTables\DataTables;
 
 class CreditController extends Controller
@@ -62,20 +64,29 @@ class CreditController extends Controller
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function save($type, Request $request){
-        $key = array_search('green', ['BTC','LTC','DOGE']);
+        $key = array_search($type, ['BTC','LTC','DOGE']);
         if($key<0){
             return response()->json(["status" => "error", "data" => 'Please input the correct coin type.']);
         }
-        $credit = Credit::create(
-            [
-                'user_id' => Auth::id(),
-                'coin_type' => $type,
-                'wallet_address' => 'sssss',
-                'coin_fee' => 10,
-                'coin_price' => 100,
-            ]);
+        $setting = Setting::find(1);
+        $apirone = new Apirone($setting->account_id, $setting->account_password);
 
+        $res = $apirone->generateAddressByAccount($type);
+        $rate = $apirone->getExchangeRate($type);
+        if($res['status'] == 200){
+            $credit = Credit::create(
+                [
+                    'user_id' => Auth::id(),
+                    'coin_type' => $type,
+                    'wallet_address' => $res['data']->address,
+                    'coin_fee' => 10,
+                    'coin_price' => $rate['data']->usd,
+                ]);
+            
+            return response()->json(["status" => "success", "data" => $credit]);
+        }else{
+            return response()->json(["status" => "failed", "data" => "Failed, try again later."]);
+        }
         
-        return response()->json(["status" => "success", "data" => $credit]);
     }
 }

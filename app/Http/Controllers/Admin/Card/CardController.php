@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Http\Controllers\Admin\Coin;
+namespace App\Http\Controllers\Admin\Card;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
-use App\Models\Coin;
+use App\Models\Card;
 use DateTime;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\DataTables;
 
-class CoinController extends Controller
+class CardController extends Controller
 {
     /**
      * Create a new controller instance.
@@ -34,32 +34,36 @@ class CoinController extends Controller
         $title = "Card Management";
 
         if ($request->ajax()) {
-            $coins = Coin::orderBy('name');
+            $cards = Card::where('is_del', 0)->orderBy('created_at', 'DESC');
 
-            return DataTables::of($coins)
+            return DataTables::of($cards)
                 ->addIndexColumn()
-                ->editColumn('is_use', function ($row) {
-                    $checked = $row->is_use ? "checked" : "";
-                    $btn='<div>
-                        <div class="custom-control custom-switch">
-                        <input type="checkbox" class="custom-control-input chk-is-use" '.$checked.' data-id="'.$row->id.'" id="chkUse_'.$row->id.'">
-                        <label class="custom-control-label" for="chkUse_'.$row->id.'"></label>
-                        </div>
-                    </div>';
-                    return $btn;
+                ->editColumn('type', function ($row) {
+                    $type = '<img alt="gallery thumbnail" style="width:45px; height:26px;" src="'.asset('user_assets/images/cards/'.$row->type).'.png">';
+                    return $type;
                 })
-                ->editColumn('image', function ($row) {
-                    return '<img style="vertical-align: baseline;" src="'.asset('user_assets/images/coins'.'/'.$row->image).'" class="img-fluid avatar avatar-10 avatar-rounded" alt="">';
+                ->editColumn('country_id', function ($row) {
+                    $country = $row->country->name;
+                    return $country;
+                })
+                ->editColumn('state_id', function ($row) {
+                    $state = $row->state->name;
+                    return $state;
                 })
                 ->addColumn('action', function ($row) {
-                    $btn = '<button type="button" data-id="' . $row->id . '" style="font-size:10px !important;" class="btn btn-xs btn-primary btnEdit">Edit</button>';
-                    // $btn .= '<button type="button" data-id="' . $row->id . '" style="font-size:10px !important;" class="ml-1 btn btn-xs btn-danger btnDelete">삭제</button>';
+                    
+                    $btn = '';
+                    if($row->is_purchased == 0){
+                        $btn .= '<button type="button" data-id="'.$row->id.'" class="btn btn-sm btn-warning btnEdit">Edit</button>';
+                        $btn .= '<button type="button" data-id="'.$row->id.'" class="btn btn-sm btn-danger btnDelete">Delete</button>';    
+                    }
+                    
                     return $btn;
                 })
-                ->rawColumns(['action', 'image', 'is_use'])
+                ->rawColumns(['type', 'action'])
                 ->make(true);
         }
-        return view('admin.coin.list', compact('title'));
+        return view('admin.card.list', compact('title'));
     }
 
     //(post)

@@ -55,18 +55,5 @@ class User extends Authenticatable
         return $this->belongsTo(UserLevel::class, 'level', 'level');
     }
 
-    public function userBank()
-    {
-        return $this->belongsTo(Bank::class, 'bank_id', 'id');
-    }
-
-    public function messages()
-    {
-        return $this->hasMany(Message::class, 'receiver_id', 'id');
-    }
-
-    public function new_messages()
-    {
-        return $this->messages()->where('is_read','=', 0);
-    }
+    
 }

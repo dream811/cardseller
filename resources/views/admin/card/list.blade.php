@@ -12,8 +12,8 @@
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item"><a href="#">관리자</a></li>
-                    <li class="breadcrumb-item"><a href="#">코인관리</a></li>
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item"><a href="#">Card Management</a></li>
                     <li class="breadcrumb-item active">{{$title}}</li>
                     </ol>
                 </div><!-- /.col -->
@@ -29,13 +29,13 @@
                     <div class="card-header p-0 pt-1 border-bottom-0">
                         <!-- <ul class="nav float-right">
                             <li class="pull-right float-right pr-1 pt-1" style="">
-                                <a href="javascript:void(0)" class="btn btn-success btn-sm btnAdd" >새로 등록</a>
+                                <a href="javascript:void(0)" class="btn btn-success btn-sm btnAdd" >N</a>
                             </li>
                         </ul> -->
                     </div>
                     <div class="card-body" >
-                        <form id="divCoinForm">
-                            <table id="coinTable" class="table  table-hover table-bordered table-striped projects text-xs" cellspacing="0" width="100%">
+                        <form id="divCardForm">
+                            <table id="cardTable" class="table  table-hover table-bordered table-striped projects text-xs" cellspacing="0" width="100%">
                                 
                             </table>
                         </form>
@@ -58,55 +58,63 @@
                 }
             });
         });	
-        var table = $('#coinTable').DataTable({
+        var table = $('#cardTable').DataTable({
             processing: true,
             serverSide: true,
             scrollY: "640px",
             pageLength: 100,
             // fixedHeader: true,
             ajax: {
-                url: "{{ route('admin.coin.list') }}"
+                url: "{{ route('admin.card.list') }}"
             },
             columns: [
                 {title: "No", data: 'DT_RowIndex', name: 'DT_RowIndex', 'render' : null, orderable  : false, 'searchable' : false, 'exportable' : false, 'printable'  : true},
-                {title: "이미지", data: 'image', name: 'image', width:"40px", orderable:false, searchable: false, },
-                {title: "코인명", data: 'kor_name', name: 'kor_name'},
-                {title: "아이디", data: 'key', name: 'key'},
-                {title: "구매제한(%)", data: 'sell_limit', name: 'sell_limit'},
-                {title: "사용상태", data: 'is_use', name: 'is_use', orderable:false, width: "50px", searchable: false},
-                {title: "조작", data: 'action', name: 'action', orderable:false, searchable: false, width: "40px", className: "text-center"},
+                {title: "Type", data: 'type', name: 'type', width:"40px", orderable:false, searchable: false, },
+                {title: "Bin", data: 'bin', name: 'bin'},
+                {title: "Exp Date", data: 'exp_date', name: 'exp_date'},
+                {title: "Category", data: 'category', name: 'category'},
+                {title: "Country", data: 'country_id', name: 'country_id'},
+                {title: "State", data: 'state_id', name: 'state_id'},
+                {title: "City", data: 'city', name: 'city'},
+                {title: "Zip", data: 'zip', name: 'zip'},
+                {title: "Price", data: 'price', name: 'price', width:'80px'},
+                {title: "Action", data: 'action', name: 'action', orderable:false, searchable: false, width: "140px", className: "text-center"},
             ],
             responsive: true, lengthChange: true,
             buttons: ["copy", "csv", "excel", "pdf", "print", "colvis"]
         }).buttons().container().appendTo('#coinTable_wrapper .col-md-6:eq(0)');
-        $('body').on('click', '.btnEdit', function () {
-            var coinId = $(this).attr('data-id');
-            window.open('/admin/coin/edit/' + coinId, '정보 수정', 'scrollbars=1, resizable=1, width=1000, height=620');
+        $('body').on('click', '.btnAdd', function () {
+            var id = $(this).attr('data-id');
+            window.open('/admin/credit/edit/' + id, 'Edit', 'scrollbars=1, resizable=1, width=500, height=620');
             return false;
         });
-        
-        // $('body').on('change', '.chk-is-use', function () {
-        //     var status = $(this).is(':checked') ? 1 : 0;
-        //     if(!confirm('사용상태를 변경하시겠습니까?')){$(this).prop('checked', status == 1 ? false : true);return}
-        //     var coinId = $(this).attr('data-id');
-        //     var action = '/admin/coin/state/' + coinId;
+        $('body').on('click', '.btnEdit', function () {
+            var id = $(this).attr('data-id');
+            window.open('/admin/credit/edit/' + id, 'Edit', 'scrollbars=1, resizable=1, width=500, height=620');
+            return false;
+        });
+        $('body').on('click', '.btnDelete', function () {
+            if(!confirm('You want to delete?')){return}
+            var msgId = $(this).attr('data-id');
+            var action = '/admin/crediet/edit/' + msgId;
             
-        //     $.ajax({
-        //         url: action,
-        //         data: {status},
-        //         type: "POST",
-        //         dataType: 'json',
-        //         success: function ({status, data}) {
-        //             if(status == "success"){
-        //                 alert('사용상태가 변경되었습니다.');
-        //             }else{
-        //                 alert('사용상태 변경에 실패하였습니다.');
-        //             }
-        //         },
-        //         error: function (data) {
-        //         }
-        //     });
-        // });
+            $.ajax({
+                url: action,
+                data: {status},
+                type: "DELETE",
+                dataType: 'json',
+                success: function ({status, data}) {
+                    if(status == "success"){
+                        refreshTable();
+                        alert('Successfully deleted.');
+                    }else{
+                        alert('Failed to delete.');
+                    }
+                },
+                error: function (data) {
+                }
+            });
+        });
         function refreshTable() {
             $('#coinTable').DataTable().ajax.reload();
         }
