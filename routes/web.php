@@ -48,6 +48,9 @@ Route::middleware('user')->name('user.')->group(
         /////////////////////////////** CARD **//////////////////////////////////
         Route::get('/card',                         [App\Http\Controllers\User\CardController::class, 'index'])->name('card');
         Route::post('/card/{id}',                   [App\Http\Controllers\User\CardController::class, 'save'])->name('card.save');
+        Route::get('/search_state/{id}',            [App\Http\Controllers\User\CardController::class, 'search_state'])->name('card.search_state');
+        Route::get('/search_city/{id}',             [App\Http\Controllers\User\CardController::class, 'search_city'])->name('card.search_city');
+        
         /////////////////////////////** MY CARD **///////////////////////////////
         Route::get('/my_card',                      [App\Http\Controllers\User\MyCardController::class, 'index'])->name('my_card');
         Route::post('/my_card/{id}',                [App\Http\Controllers\User\MyCardController::class, 'save'])->name('my_card.save');
@@ -88,7 +91,9 @@ Route::middleware('admin')->prefix('admin')->name('admin.')->group(
     function () {
         Route::get('/home',                         [App\Http\Controllers\Admin\HomeController::class, 'index'])->name('home');
         Route::get('/realtime_info',                [App\Http\Controllers\Admin\HomeController::class, 'realtime_info'])->name('realtime_info');
-        
+        Route::get('/mypage',                       [App\Http\Controllers\Admin\HomeController::class, 'mypage'])->name('mypage');
+        Route::post('/check_password',              [App\Http\Controllers\Admin\HomeController::class, 'check_password'])->name('check_password');
+        Route::post('/change_password',             [App\Http\Controllers\Admin\HomeController::class, 'change_password'])->name('change_password');
         //User
         Route::get('user/list',                     [App\Http\Controllers\Admin\User\UserController::class, 'index'])->name('user.list');
         Route::get('user/edit/{userId}',            [App\Http\Controllers\Admin\User\UserController::class, 'edit'])->name('user.edit');
@@ -103,26 +108,46 @@ Route::middleware('admin')->prefix('admin')->name('admin.')->group(
         Route::post('credit/edit/{id}',             [App\Http\Controllers\Admin\Credit\CreditController::class, 'save'])->name('credit.save');
         Route::delete('credit/edit/{id}',           [App\Http\Controllers\Admin\Credit\CreditController::class, 'delete'])->name('credit.delete');
         //Country
-        Route::get('country/list',                     [App\Http\Controllers\Admin\Coin\CoinController::class, 'index'])->name('coin.list');
-        Route::post('country/state/{id}',              [App\Http\Controllers\Admin\Coin\CoinController::class, 'state'])->name('coin.state');
-        Route::get('country/edit/{coinId}',            [App\Http\Controllers\Admin\Coin\CoinController::class, 'edit'])->name('coin.edit');
-        Route::post('country/edit/{coinId}',           [App\Http\Controllers\Admin\Coin\CoinController::class, 'save'])->name('coin.save');
+        Route::get('card/country_list',             [App\Http\Controllers\Admin\Card\CountryController::class, 'index'])->name('country.list');
+        Route::post('card/country_state/{id}',      [App\Http\Controllers\Admin\Card\CountryController::class, 'state'])->name('country.state');
+        Route::get('card/country_edit/{id}',        [App\Http\Controllers\Admin\Card\CountryController::class, 'edit'])->name('country.edit');
+        Route::post('card/country_edit/{id}',       [App\Http\Controllers\Admin\Card\CountryController::class, 'save'])->name('country.save');
+        Route::delete('card/country_edit/{id}',     [App\Http\Controllers\Admin\Card\CountryController::class, 'delete'])->name('country.delete');
+        Route::get('card/search_state/{id}',        [App\Http\Controllers\Admin\Card\CardController::class, 'search_state'])->name('card.search_state');
+        Route::get('card/search_city/{id}',         [App\Http\Controllers\Admin\Card\CardController::class, 'search_city'])->name('card.search_city');
+        
         //State
-        Route::get('state/list',                     [App\Http\Controllers\Admin\Coin\CoinController::class, 'index'])->name('coin.list');
-        Route::post('state/state/{id}',              [App\Http\Controllers\Admin\Coin\CoinController::class, 'state'])->name('coin.state');
-        Route::get('state/edit/{coinId}',            [App\Http\Controllers\Admin\Coin\CoinController::class, 'edit'])->name('coin.edit');
-        Route::post('state/edit/{coinId}',           [App\Http\Controllers\Admin\Coin\CoinController::class, 'save'])->name('coin.save');
+        Route::get('card/state_list',               [App\Http\Controllers\Admin\Card\StateController::class, 'index'])->name('state.list');
+        Route::post('card/state_state/{id}',        [App\Http\Controllers\Admin\Card\StateController::class, 'state'])->name('state.state');
+        Route::get('card/state_edit/{id}',          [App\Http\Controllers\Admin\Card\StateController::class, 'edit'])->name('state.edit');
+        Route::post('card/state_edit/{id}',         [App\Http\Controllers\Admin\Card\StateController::class, 'save'])->name('state.save');
+        Route::delete('card/state_edit/{id}',       [App\Http\Controllers\Admin\Card\StateController::class, 'delete'])->name('state.delete');
+        //City
+        Route::get('card/city_list',                [App\Http\Controllers\Admin\Card\CoinController::class, 'index'])->name('city.list');
+        Route::post('card/city_state/{id}',         [App\Http\Controllers\Admin\Card\CoinController::class, 'state'])->name('city.state');
+        Route::get('card/city_edit/{id}',           [App\Http\Controllers\Admin\Card\CoinController::class, 'edit'])->name('city.edit');
+        Route::post('card/city_edit/{id}',          [App\Http\Controllers\Admin\Card\CoinController::class, 'save'])->name('city.save');
+        Route::post('card/city_edit/{id}',          [App\Http\Controllers\Admin\Card\CoinController::class, 'save'])->name('city.save');
+        Route::delete('card/city_edit/{id}',        [App\Http\Controllers\Admin\Card\CoinController::class, 'delete'])->name('city.delete');
+        //Type
+        Route::get('card/type_list',                [App\Http\Controllers\Admin\Card\CoinController::class, 'index'])->name('type.list');
+        Route::post('card/type_state/{id}',         [App\Http\Controllers\Admin\Card\CoinController::class, 'state'])->name('type.state');
+        Route::get('card/type_edit/{id}',           [App\Http\Controllers\Admin\Card\CoinController::class, 'edit'])->name('type.edit');
+        Route::post('card/type_edit/{id}',          [App\Http\Controllers\Admin\Card\CoinController::class, 'save'])->name('type.save');
+        Route::delete('card/type_edit/{id}',        [App\Http\Controllers\Admin\Card\CoinController::class, 'delete'])->name('type.delete');
         //Card
         Route::get('card/list',                     [App\Http\Controllers\Admin\Card\CardController::class, 'index'])->name('card.list');
         Route::post('card/state/{id}',              [App\Http\Controllers\Admin\Card\CardController::class, 'state'])->name('card.state');
-        Route::get('card/edit/{coinId}',            [App\Http\Controllers\Admin\Card\CardController::class, 'edit'])->name('card.edit');
-        Route::post('card/edit/{coinId}',           [App\Http\Controllers\Admin\Card\CardController::class, 'save'])->name('card.save');
+        Route::get('card/edit/{id}',                [App\Http\Controllers\Admin\Card\CardController::class, 'edit'])->name('card.edit');
+        Route::post('card/edit/{id}',               [App\Http\Controllers\Admin\Card\CardController::class, 'save'])->name('card.save');
+        Route::get('card/search_state',             [App\Http\Controllers\Admin\Card\CardController::class, 'search_state'])->name('card.search_state');
+        Route::get('card/search_city',             [App\Http\Controllers\Admin\Card\CardController::class, 'search_city'])->name('card.search_city');
         //sell
-        Route::get('calculate/trading',             [App\Http\Controllers\Admin\Calculate\TradingController::class, 'index'])->name('calculate.trading_list');
-        Route::get('calculate/trading_edit/{id}',   [App\Http\Controllers\Admin\Calculate\TradingController::class, 'edit'])->name('calculate.trading_edit');
-        Route::post('calculate/trading_edit/{id}',  [App\Http\Controllers\Admin\Calculate\TradingController::class, 'save'])->name('calculate.trading_save');
-        Route::delete('calculate/trading_edit/{id}',[App\Http\Controllers\Admin\Calculate\TradingController::class, 'delete'])->name('calculate.trading_delete');
-        Route::post('calculate/trading_state/{id}', [App\Http\Controllers\Admin\Calculate\TradingController::class, 'state'])->name('calculate.trading_state');
+        Route::get('calculate/sale',                [App\Http\Controllers\Admin\Calculate\SaleController::class, 'index'])->name('calculate.sale_list');
+        Route::get('calculate/sale_edit/{id}',      [App\Http\Controllers\Admin\Calculate\SaleController::class, 'edit'])->name('calculate.sale_edit');
+        Route::post('calculate/sale_edit/{id}',     [App\Http\Controllers\Admin\Calculate\SaleController::class, 'save'])->name('calculate.sale_save');
+        Route::delete('calculate/sale_edit/{id}',   [App\Http\Controllers\Admin\Calculate\SaleController::class, 'delete'])->name('calculate.sale_delete');
+        Route::post('calculate/sale_edit/{id}',     [App\Http\Controllers\Admin\Calculate\SaleController::class, 'state'])->name('calculate.sale_state');
         //qna
         Route::get('contact/qna',                   [App\Http\Controllers\Admin\Contact\QNAController::class, 'index'])->name('qna.list');
         Route::get('contact/acc_qna',               [App\Http\Controllers\Admin\Contact\QNAController::class, 'acc_index'])->name('qna.acc_list');

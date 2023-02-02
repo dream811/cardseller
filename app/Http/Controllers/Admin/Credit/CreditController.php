@@ -131,7 +131,7 @@ class CreditController extends Controller
         $money = Credit::find($id);
         $user = User::find($money->user_id);
 
-        if($request->post('status') == "PAID"){//승인
+        if($request->post('status') == "PAID"){//
             if($money->status != "PAID" ){
                 $user->update(['money' => $user->money + $money->amount]);
             }

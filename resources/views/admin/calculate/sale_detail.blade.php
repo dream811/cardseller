@@ -5,7 +5,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0" style="font-size:16px; font-weight:700;">정산일정 {{ $title }}</h1>
+                <h1 class="m-0" style="font-size:16px; font-weight:700;">Sale {{ $title }}</h1>
             </div><!-- /.col -->
             <div style="position: fixed; z-index: 99; padding: 4px; right: 20px; background-color: lightgray; border-radius: 0.5rem;">
                 <button type="submit" class="btn btn-primary btn-xs btnSave">설정저장</button>

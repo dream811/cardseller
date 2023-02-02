@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Card;
+use App\Models\Country;
+use App\Models\State;
 use DateTime;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -32,9 +34,16 @@ class CardController extends Controller
     {
 
         $title = "Card Management";
-
+        $countries = Country::where('is_use', 1)->where('is_del', 0)->get();
+        $states = State::where('is_use', 1)->where('is_del', 0)->get();
+        $cities = Card::where('is_del', 0)->where('is_purchased', 0)->groupBy('city')->select('city')->get();
+        $categories = Card::where('is_del', 0)->where('is_purchased', 0)->groupBy('category')->select('category')->get();
+        
         if ($request->ajax()) {
-            $cards = Card::where('is_del', 0)->orderBy('created_at', 'DESC');
+            $cards = Card::where('is_del', 0)
+            ->where('is_purchased', 0)
+            ->where('exp_date','>', \DB::raw('NOW()'))
+            ->orderBy('created_at', 'DESC');
 
             return DataTables::of($cards)
                 ->addIndexColumn()
@@ -50,6 +59,10 @@ class CardController extends Controller
                     $state = $row->state->name;
                     return $state;
                 })
+                ->addColumn('bin', function ($row) {
+                    $bin = substr($row->card_number, 0, 6);
+                    return $bin;
+                })
                 ->addColumn('action', function ($row) {
                     
                     $btn = '';
@@ -60,78 +73,83 @@ class CardController extends Controller
                     
                     return $btn;
                 })
+                ->filter(function ($query) use ($request) {
+                    $query->when($request->get('country_id') != "", function ($query2) use ($request) {
+                        $query2->where('country_id', $request->get('country_id'));
+                    })
+                    ->when($request->get('state_id') != "", function ($query2) use ($request) {
+                        $query2->where('state_id', $request->get('state_id'));
+                    })
+                    ->when($request->get('category') != "", function ($query2) use ($request) {
+                        $query2->where('category', 'like', '%'.$request->get('category').'%');
+                    })
+                    ->when($request->get('bin') != "", function ($query2) use ($request) {
+                        $query2->where('card_number', 'like',  $request->get('bin').'%');
+                    })
+                    ->when($request->get('state_id') != "", function ($query2) use ($request) {
+                        $query2->where('state_id', $request->get('state_id'));
+                    })
+                    ->when($request->get('zip') != "", function ($query2) use ($request) {
+                        $query2->where('zip', $request->get('zip'));
+                    })
+                    ->when($request->get('type') != "", function ($query2) use ($request) {
+                        $query2->where('type', $request->get('type'));
+                    });
+                })
                 ->rawColumns(['type', 'action'])
                 ->make(true);
         }
-        return view('admin.card.list', compact('title'));
+        return view('admin.card.list', compact('title', 'categories', 'countries', 'states', 'cities'));
     }
 
     //(post)
-    public function edit($cardId = 0)
+    public function edit($id = 0)
     {
         $title = "Edit";
-        if ($cardId == 0) {
+        if ($id == 0) {
             $title = "Add";
         }
 
-        $card = Card::where('id', $cardId)
+        $card = Card::where('id', $id)
             ->firstOrNew();
 
-        return view('admin.card.detail', compact('title', 'cardId', 'card'));
+        $countries = Country::where('is_use', 1)->where('is_del', 0)->get();
+        $states = State::where('is_use', 1)->where('is_del', 0)->get();
+
+        return view('admin.card.detail', compact('title', 'id', 'card', 'countries', 'states'));
     }
-    public function save(Request $request)
+    public function save($id, Request $request)
     {
-        // $path = $request->post('beforeImage');
-
-        // if ($request->file('fileImage')) {
-        //     if ($path != "") {
-        //         Storage::delete('public/' . $path);
-        //     }
-
-        //     $imageFile = $request->file('fileImage');
-        //     $new_name = rand() . '.' . $imageFile->getClientOriginalExtension();
-        //     $old_name = $imageFile->getClientOriginalName();
-        //     $path = url('storage') . '/' . $request->file('fileImage')->storeAs('/uploads/profile_images', $new_name, 'public');
-        // }
+        
         $data = [
-            // 'mb_profile' => $path,
-            'is_use' => $request->post('is_use'),
-            'key' => $request->post('key'),
-            'name' => $request->post('key'),
-            'kor_name' => $request->post('kor_name'),
-            'sell_limit' => $request->post('sell_limit'),
+            'type' => $request->post('type'),
+            'cvv' => $request->post('cvv'),
+            'exp_date' => $request->post('exp_date'),
+            'category' => $request->post('category'),
+            'price' => $request->post('price'),
+            'name' => $request->post('name'),
+            'email' => $request->post('email'),
+            'phone' => $request->post('phone'),
+            'card_number' => $request->post('card_number'),
+            'card_address' => $request->post('card_address'),
+            'country_id' => $request->post('country_id'),
+            'state_id' => $request->post('state_id'),
+            'city' => $request->post('city'),
+            'zip' => $request->post('zip'),
+            'is_del' => 0
         ];
         
-        $coin = Coin::updateOrCreate(
-            ['id' => $request->post('id')],
+        $card = Card::updateOrCreate(
+            ['id' => $id],
             $data
         );
+        $data = '<script>alert("Successfully saved");window.opener.location.reload();window.close();</script>';
+        return view('test', compact('data'));
         //$user->image = asset('storage/'. $user->image);
-        return response()->json(["status" => "success", "data" => $coin]);
+        //return response()->json(["status" => "success", "data" => $card]);
     }
 
-    public function checkIDEmail(Request $request)
-    {
-        $email = 1;
-        $id = 1;
-        if ($request->get('userId') == 0) {
-            if (User::where('strID', $request->get('txtID'))->count()) {
-                $id = 0;
-            }
-            if (User::where('email', $request->get('txtEmail'))->count()) {
-                $email = 0;
-            }
-        } else {
-            $user = User::where('id', '!=', $request->get('userId'));
-            if ($user->where('strID', $request->get('txtID'))->count()) {
-                $id = 0;
-            }
-            if ($user->where('email', $request->get('txtEmail'))->count()) {
-                $email = 0;
-            }
-        }
-        return response()->json(["status" => "success", "data" => compact('id', 'email')]);
-    }
+    
 
     /**
      * Show the application dashboard.
@@ -152,7 +170,7 @@ class CardController extends Controller
         return view('product.MarketIDList');
     }
 
-    //사용상태 변경
+    //
     public function state($coinId, Request $request)
     {
         $status = $request->post('status');
@@ -167,16 +185,13 @@ class CardController extends Controller
         return response()->json(["status" => "success", "data" => $coin]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  $accountId
-     * @return \Illuminate\Http\Response
-     */
-    public function accountDelete($marketId, $accountId)
-    {
-        //
-        //$marketAccount = MarketAccount::where('nIdx', $accountId)->delete();
-        return response()->json(["status" => "success", "data" => $marketAccount]);
+    public function search_state($id){
+        $states = State::where('country_id', $id)->get();
+        return response()->json(["status" => "success", "data" => $states]);
+    }
+
+    public function search_city($id){
+        $cities = Card::where('state_id', $id)->where('is_del', 0)->where('is_purchased', 0)->groupBy('city')->select('city')->get();
+        return response()->json(["status" => "success", "data" => $cities]);
     }
 }

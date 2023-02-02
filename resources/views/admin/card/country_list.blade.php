@@ -10,7 +10,7 @@
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="#">Home</a></li>
-                    <li class="breadcrumb-item"><a href="#">Contact</a></li>
+                    <li class="breadcrumb-item"><a href="#">#</a></li>
                     <li class="breadcrumb-item active">{{$title}}</li>
                     </ol>
                 </div><!-- /.col -->
@@ -26,7 +26,7 @@
                     <div class="card-header p-0 pt-1 border-bottom-0">
                         <ul class="nav float-right">
                             <li class="pull-right float-right pr-1 pt-1" style="">
-                                <a href="javascript:void(0)" class="btn btn-success btn-sm btnAdd" >새로 작성</a>
+                                <a href="javascript:void(0)" class="btn btn-success btn-sm btnAdd" >New</a>
                             </li>
                         </ul>
                     </div>
@@ -37,7 +37,7 @@
                             </table>
                         </form>
                     </div>
-                        
+                   
                     <!-- /.card -->
                 </div>
             </div>
@@ -62,36 +62,31 @@
             pageLength: 100,
             // fixedHeader: true,
             ajax: {
-                url: "{{ route('admin.notice.list') }}"
+                url: "{{ route('admin.country.list') }}"
             },
             columns: [
-                {title: "No", data: 'DT_RowIndex', name: 'DT_RowIndex', 'render' : null, width:"60px", orderable  : false, 'searchable' : false},
-                {title: "Info", data: 'title', name: 'title', orderable  : false , className:"text-center"},
-                {title: "Date", data: 'created_at', name: 'created_at', width:"120px", orderable  : false, className:"text-center"},
-                {title: "Action", data: 'action', name: 'action', orderable  : false, width:"120px", className:"text-center"},
+                {title: "No", data: 'DT_RowIndex', name: 'DT_RowIndex', 'render' : null, orderable  : false, 'searchable' : false, width: '40px'},
+                {title: "Name", data: 'name', name: 'name'},
+                {title: "Action", data: 'action', name: 'action', orderable  : false , className:"text-center", width: '140px'},
             ],
             responsive: true, lengthChange: true,
             buttons: ["copy", "csv", "excel", "pdf", "print", "colvis"]
         }).buttons().container().appendTo('#Table_wrapper .col-md-6:eq(0)');
+        
         $('body').on('click', '.btnEdit', function () {
-            var noticeId = $(this).attr('data-id');
-            window.open('/admin/contact/notice/' + noticeId, 'Edit', 'scrollbars=1, resizable=1, width=1000, height=620');
-            return false;
-        });
-        $('body').on('click', '.btnDetail', function () {
-            var noticeId = $(this).attr('data-id');
-            window.open('/admin/contact/notice/' + noticeId, 'Edit', 'scrollbars=1, resizable=1, width=1000, height=620');
+            var id = $(this).attr('data-id');
+            window.open('/admin/card/country_edit/' + id, 'Country', 'scrollbars=1, resizable=1, width=600, height=420');
             return false;
         });
         $('body').on('click', '.btnAdd', function () {
-            //var coinId = $(this).attr('data-id');
-            window.open('/admin/contact/notice/0', 'Add', 'scrollbars=1, resizable=1, width=1000, height=620');
+            window.open('/admin/card/country_edit/' + 0, 'Country', 'scrollbars=1, resizable=1, width=600, height=420');
             return false;
         });
+
         $('body').on('click', '.btnDelete', function () {
-            if(!confirm('You really want to delete?')){return}
-            var noticeId = $(this).attr('data-id');
-            var action = '/admin/contact/notice/' + noticeId;
+            if(!confirm('You want to delete?')){return}
+            var id = $(this).attr('data-id');
+            var action = '/admin/card/country_edit/' + id;
             
             $.ajax({
                 url: action,
@@ -102,7 +97,6 @@
                     if(status == "success"){
                         refreshTable();
                         alert('Successfully deleted.');
-                        
                     }else{
                         alert('Failed to delete.');
                     }
@@ -111,7 +105,6 @@
                 }
             });
         });
-        
         function refreshTable() {
             $('#Table').DataTable().ajax.reload();
         }

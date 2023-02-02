@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Http\Controllers\Admin\Contact;
+namespace App\Http\Controllers\Admin\Card;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Product;
-use App\Models\FAQ;
+use App\Models\Country;
+use App\Models\State;
 use Carbon\Carbon;
 use Yajra\DataTables\Facades\DataTables;
 
-class FAQController extends Controller
+class StateController extends Controller
 {
     /**
      * Create a new controller instance.
@@ -29,35 +29,27 @@ class FAQController extends Controller
      */
     public function index(Request $request)
     {
-        $title = "FAQ";
+        $title = "State";
 
 
         if ($request->ajax()) {
-            $qnas = FAQ::where('is_del', 0)
-                ->orderBy('updated_at', 'DESC');
+            $data = State::where('is_del', 0)
+                ->orderBy('name', 'DESC');
 
-            return DataTables::eloquent($qnas)
+            return DataTables::eloquent($data)
                 ->addIndexColumn()
-                ->addColumn('check', function ($row) {
-                    $check = '<input type="checkbox" name="chkProduct[]" onclick="" value="' . $row->id . '">';
-                    return $check;
+                ->editColumn('country_id', function ($row){
+                    return $row->country->name;
                 })
                 ->addColumn('action', function ($row) {
                     $element = '<button type="button" data-id="' . $row->id . '" class="btn btn-sm btn-warning btnEdit">Edit</button>';
                     $element .= '<button type="button" data-id="' . $row->id . '" class="btn btn-sm btn-danger btnDelete">Delete</button>';
                     return $element;
                 })
-                ->addColumn('questionInfo', function ($row) {
-                    $popup = '<span data-id="' . $row->id . '" style="cursor:pointer" class="btnEdit">' . $row->strQuestion . '</span>';
-                    return $popup;
-                })
-                ->addColumn('writer', function ($row) {
-                    return 'Admin';
-                })
-                ->rawColumns(['check', 'questionInfo', 'writer', 'action'])
+                ->rawColumns(['country_id','action'])
                 ->make(true);
         }
-        return view('admin.contact.faq_list', compact('title'));
+        return view('admin.card.state_list', compact('title'));
     }
 
     /**
@@ -65,20 +57,21 @@ class FAQController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function show($id)
+    public function edit($id)
     {
-        $faqInfo = FAQ::firstOrNew(['id' => $id]);
+        $countries = Country::where('is_del', 0)->get();
+        $state = State::firstOrNew(['id' => $id]);
 
-        return view('admin.contact.faq_detail', compact('faqInfo', 'id'));
+        return view('admin.card.state_detail', compact('countries', 'state', 'id'));
     }
     //
     public function save($id, Request $request)
     {
-        FAQ::updateOrCreate(
+        State::updateOrCreate(
             ['id' => $id],
             [
-                'answer' => $request->post('answer'),
-                'question' => $request->post('question'),
+                'name' => $request->post('name'),
+                'country_id' => $request->post('country_id'),
             ]
         );
         $data = '<script>alert("Successfully saved.");window.opener.location.reload();window.close();</script>';
@@ -87,7 +80,7 @@ class FAQController extends Controller
     //
     public function delete($id, Request $request)
     {
-        $qna = FAQ::destroy($id);
-        return response()->json(["status" => "success", "data" => 'Successfully deleted.']);
+        State::find($id)->update(['is_del' => 1]);
+        return response()->json(["status" => "success", "data" => 'Successfully deleted']);
     }
 }

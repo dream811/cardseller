@@ -1,4 +1,4 @@
-@extends('user.layouts.app')
+@extends('admin.layouts.app')
 @section('content')
 <div class="content-wrapper">
     <div class="content-header">
@@ -9,7 +9,7 @@
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item"><a href="#">User</a></li>
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
                     <li class="breadcrumb-item"><a href="#">*</a></li>
                     <li class="breadcrumb-item active">{{$title}}</li>
                     </ol>
@@ -59,13 +59,7 @@
                                 <input type="password" class="form-control form-control-sm" id="password_confirm" name="password_confirm" value="" placeholder="Please confirm your password">
                                 </div>
                             </div>
-                            <hr>
-                            <div class="form-group row mb-0">
-                                <label for="money" class="text-left text-sm-right col-sm-3 col-md-2 col-form-label">Credit</label>
-                                <div class="col-sm-5 col-md-3">
-                                <input type="number" class="form-control form-control-sm" id="money" name="money" value="{{ Auth::user()->money }}" readonly>
-                                </div>
-                            </div>
+                            
                         </form>
                     </div>
                         
@@ -107,7 +101,7 @@
             }
 
             
-            var action = '/check_password';
+            var action = '/admin/check_password';
             //var data = $('#divProductForm').serialize();
             var data = { password }
             $.ajax({
@@ -119,7 +113,7 @@
                     if(status == "success"){
                         var data = { password_new }
                         $.ajax({
-                            url: "/change_password",
+                            url: "/admin/change_password",
                             data: data,
                             type: "POST",
                             dataType: 'json',

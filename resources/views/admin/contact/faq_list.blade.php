@@ -24,11 +24,11 @@
             <div class="col-12 col-sm-12">
                 <div class="card card-primary card-outline card-tabs">
                     <div class="card-header p-0 pt-1 border-bottom-0">
-                        <!-- <ul class="nav float-right">
+                        <ul class="nav float-right">
                             <li class="pull-right float-right pr-1 pt-1" style="">
-                                <a href="javascript:void(0)" class="btn btn-success btn-sm btnAdd" >새로 작성</a>
+                                <a href="javascript:void(0)" class="btn btn-success btn-sm btnAdd" >New</a>
                             </li>
-                        </ul> -->
+                        </ul>
                     </div>
                     <div class="card-body" >
                         <form id="divForm">
@@ -62,22 +62,49 @@
             pageLength: 100,
             // fixedHeader: true,
             ajax: {
-                url: "{{ route('user.faq') }}"
+                url: "{{ route('admin.faq.list') }}"
             },
             columns: [
-                {title: "No", data: 'DT_RowIndex', name: 'DT_RowIndex', 'render' : null, orderable  : false, 'searchable' : false},
+                {title: "No", data: 'DT_RowIndex', name: 'DT_RowIndex', width:'60px', 'render' : null, orderable  : false, 'searchable' : false},
                 {title: "Question", data: 'question', name: 'question', orderable  : false , className:"text-center"},
+                {title: "Action", data: 'action', name: 'action', width:'120px', orderable  : false , className:"text-center"},
             ],
             responsive: true, lengthChange: true,
             buttons: ["copy", "csv", "excel", "pdf", "print", "colvis"]
         }).buttons().container().appendTo('#Table_wrapper .col-md-6:eq(0)');
         
-        $('body').on('click', '.btnDetail', function () {
+        $('body').on('click', '.btnEdit', function () {
             var faqId = $(this).attr('data-id');
-            window.open('/faq/' + faqId, 'FAQ', 'scrollbars=1, resizable=1, width=1000, height=620');
+            window.open('/admin/contact/faq/' + faqId, 'FAQ', 'scrollbars=1, resizable=1, width=1000, height=620');
             return false;
         });
-        
+        $('body').on('click', '.btnAdd', function () {
+            window.open('/admin/contact/faq/' + 0, 'FAQ', 'scrollbars=1, resizable=1, width=1000, height=620');
+            return false;
+        });
+        $('body').on('click', '.btnDelete', function () {
+            if(!confirm('You really want to delete?')){return}
+            var id = $(this).attr('data-id');
+            var action = '/admin/contact/faq/' + id;
+            
+            $.ajax({
+                url: action,
+                data: {status},
+                type: "DELETE",
+                dataType: 'json',
+                success: function ({status, data}) {
+                    if(status == "success"){
+                        refreshTable();
+                        alert('Successfully deleted.');
+                        
+                    }else{
+                        alert('Failed to delete.');
+                    }
+                },
+                error: function (data) {
+                }
+            });
+        });
         function refreshTable() {
             $('#Table').DataTable().ajax.reload();
         }

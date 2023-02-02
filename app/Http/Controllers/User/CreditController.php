@@ -37,7 +37,10 @@ class CreditController extends Controller
             return DataTables::of($cards)
                 ->addIndexColumn()
                 ->editColumn('status', function ($row) {
-                    $status = '<span style="width:80px;" class="badge badge-success">'.$row->status.'</span>';
+                    $badge = "badge-success";
+                    if($row->status == "PAID") $badge = "badge-warning";
+                    else if($row->status == "CLOSED") $badge = "badge-secondary"; 
+                    $status = '<span style="width:80px;" class="badge '.$badge.'">'.$row->status.'</span>';
                     return $status;
                 })
                 ->editColumn('wallet_address', function ($row) {
@@ -45,7 +48,9 @@ class CreditController extends Controller
                     return $wallet;
                 })               
                 ->addColumn('action', function ($row) {
-                    $btn = '<button type="button" data-id="'.$row->id.'" class="btn btn-success btnCheck">Check</button>';
+                    $btn = "";
+                    if($row->status == "OPENED")
+                        $btn = '<button type="button" data-id="'.$row->id.'" class="btn btn-success btnCheck">Check</button>';
                     return $btn;
                 })
                 ->editColumn('created_at', function($row){ 

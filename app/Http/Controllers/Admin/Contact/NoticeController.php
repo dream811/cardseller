@@ -30,7 +30,7 @@ class NoticeController extends Controller
      */
     public function index(Request $request)
     {
-        $title = "공지사항";
+        $title = "News";
 
 
         if ($request->ajax()) {
@@ -39,10 +39,7 @@ class NoticeController extends Controller
 
             return DataTables::eloquent($notices)
                 ->addIndexColumn()
-                ->addColumn('check', function ($row) {
-                    $check = '<input type="checkbox" name="chkProduct[]" onclick="" value="' . $row->id . '">';
-                    return $check;
-                })
+                
                 ->addColumn('action', function ($row) {
                     $element = '<button type="button" data-id="' . $row->id . '" style="font-size:10px !important;" class="btn btn-xs btn-success btnEdit">수정</button>';
                     $element .= '<button type="button" data-id="' . $row->id . '" style="font-size:10px !important;" class="btn btn-xs btn-secondary btnDelete">삭제</button>';
@@ -52,15 +49,12 @@ class NoticeController extends Controller
                     $title = '<span data-id="' . $row->id . '" style="cursor:pointer; color:#007bff" class="btnDetail">' . $row->subject . '</span>';
                     return $title;
                 })
-                ->addColumn('popupInfo', function ($row) {
-                    $popup = $row->is_popup == 1 ? "팝업공지" : "일반공지";
-                    return $popup;
-                })
+                
                 ->addColumn('writer', function ($row) {
-                    $content = '관리자';
+                    $content = 'Admin';
                     return $content;
                 })
-                ->rawColumns(['check', 'popupInfo', 'writer', 'title', 'action'])
+                ->rawColumns(['check', 'writer', 'title', 'action'])
                 ->make(true);
         }
         return view('admin.contact.notice_list', compact('title'));
@@ -74,29 +68,27 @@ class NoticeController extends Controller
     public function show($id)
     {
         $noticeInfo = Notice::firstOrNew(['id' => $id]);
-        $title = "작성";
+        $title = "Add";
         if($id == 0){
-            $title = "수정";
+            $title = "Edit";
         } 
         return view('admin.contact.notice_detail', compact('noticeInfo', 'id', 'title'));
     }
-    //답변 저장
+    //save
     public function save($id, Request $request)
     {
         Notice::updateOrCreate(
             ['id' => $id],
             [
                 'subject' => $request->post('subject'),
-                'content' => $request->post('content'),
-                'is_popup' => $request->post('chk_is_popup'),
             ]
         );
-        return response()->json(["status" => "success", "data" => '성과적으로 작성되었습니다.']);
+        return response()->json(["status" => "success", "data" => 'Successfully saved.']);
     }
-    //문의내용 삭제
+    //delete
     public function delete($id, Request $request)
     {
         $notice = Notice::destroy($id);
-        return response()->json(["status" => "success", "data" => '성과적으로 삭제되었습니다.']);
+        return response()->json(["status" => "success", "data" => 'Successfully removed.']);
     }
 }

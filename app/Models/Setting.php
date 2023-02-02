@@ -13,8 +13,8 @@ class Setting extends Model
     protected $primaryKey = 'id';
     protected $fillable = [
         'app_name',
-        'account_id',
-        'account_password',
+        'apirone_account',
+        'apirone_trans_key',
         'guide',
         'service_pause_msg',
     ];

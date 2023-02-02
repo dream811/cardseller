@@ -54,24 +54,46 @@ class HomeController extends Controller
         return response()->json(["status" => "success", "data" => compact('new_users', 'levelup_users', 'new_deposits', 'new_withdraws', 'new_qnas', 'new_acc_qnas', 'new_tradings')]);
     }
 
-    public function alarm_state($userId, Request $request)
+    /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function mypage(Request $request)
     {
-        $user = User::find($userId);
-        $alarm_id = $request->post('alarm_id');
-        if(strpos($user->add_feature, "($alarm_id)") !== false){
-            $add_feature = str_replace("($alarm_id)","", $user->add_feature);
-        }else{
-            if(strpos($user->add_feature, ")\"") !== false){
-                $add_feature = str_replace(")\"",")($alarm_id)\"", $user->add_feature);
-            }else{
-                $add_feature = str_replace("\"\"","\"($alarm_id)\"", $user->add_feature);
-            }
-        }
-        $add_feature = str_replace("alarm","\"alarm\"", $add_feature);
-        $user->update(            
-            ['add_feature' => $add_feature]
-        );
+        $title="My Info";
+        return view('admin.mypage', compact('title'));
+    }
 
-        return response()->json(["status" => "success", "data" => compact('add_feature')]);
+    /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function check_password(Request $request)
+    {
+        if(Hash::check($request->post('password'), Auth::user()->password)){
+            $message = "Password doesn't match with your old password.";
+            return response()->json(["status" => "success", "data" => compact('message')]);
+        }else{
+            $message = "Password is incorrect.";
+            return response()->json(["status" => "failed", "data" => compact('message')]);
+        }
+        
+    }
+
+    /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function change_password(Request $request)
+    {
+        $new_password = Hash::make($request->post('password_new'));
+        $user = User::find(Auth::id());
+        $user->password = $new_password;
+        $user->save();
+        $message = "Your password changed successfully.";
+        return response()->json(["status" => "success", "data" => compact('message')]);
     }
 }

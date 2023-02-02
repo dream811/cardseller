@@ -61,18 +61,6 @@ function initialize() {
     onOpenUrl("/admin/sendLetter?strAdminID=&nSn=" + info.nSn, 1200, 750);
   }
   
-  function onDeleteUserLetter(info)
-  {
-    if(confirm("삭제하시겠습니까?") == true)
-        SendPacket(SOCKET_ADMIN_PARTLETTER_DELETE, info.nSn);
-  }
-  
-  function onDeleteAll()
-  {
-    if(confirm("전체 삭제하시겠습니까?") == true)
-        SendPacket(SOCKET_ADMIN_PARTLETTER_DELETE, -1);
-  }
-  
 
   
   function ChangeCoinState() {
@@ -100,42 +88,3 @@ function initialize() {
     SendPacket(PKT_ADMIN_CHANGE_COIN_STATE, JSON.stringify(packet));
   });
 
-  $('body').on('click', '.btnSave', function () {
-    
-    var kor_name = $("#kor_name").val();
-    if(kor_name == ""){
-        alert('이름을 입력해주세요!');
-        return false;
-    }
-    var key = $("#key").val();
-    if(key == ""){
-        alert('아이디를 입력해주세요!');
-        return false;
-    }
-    var sell_limit = $("#sell_limit").val();
-    if(sell_limit == ""){
-        alert('구매제한값을 입력해주세요!');
-        return false;
-    }
-
-    var is_use = $("input[name='is_use']:checked").val();
-    if(is_use == undefined){
-        alert('사용상태를 선택해주세요!');
-        return false;
-    }
-
-    var coinId = $('#id').val();
-    var packet = {
-      "id"                :   coinId,
-      "type"              :   1,//0:change state 1: change info
-      "is_use"            :   is_use,
-      "kor_name"          :   kor_name,
-      "key"               :   key,
-      "name"               :   key,
-      "sell_limit"        :   sell_limit,
-
-      "user_id"           :   scope.userInfo.id,
-      "user_password"     :   scope.userInfo.password,
-    }
-    SendPacket(PKT_ADMIN_CHANGE_COIN_STATE, JSON.stringify(packet));
-  });

@@ -9,6 +9,7 @@
             </div><!-- /.col -->
             <div style="position: fixed; z-index: 99; padding: 4px; right: 20px; background-color: lightgray; border-radius: 0.5rem;">
                 
+                <button type="submit" class="btn bg-primary btn-xs btnSave">Save</button>
                 <button type="button" class="btn bg-indigo btn-xs btnClose">Close</button>
             </div>
             </div><!-- /.col -->
@@ -29,18 +30,18 @@
                         
                         
                         <div class="form-group row mb-0">
-                            <label for="inputEmail3" class="text-left text-sm-right col-sm-3 col-md-2 col-form-label">Question:</label>
+                            <label for="question" class="text-left text-sm-right col-sm-3 col-md-2 col-form-label">Question:</label>
                             <div class="col-sm-9 col-md-9 mt-1">
-                                <span>{{ $faqInfo->question }}</span>
+                                <input type="text" class="form-control form-control-sm" id="question" name="question" value="{{ $faqInfo->question }}" placeholder="Please input " autocomplete="off">
                             </div>
                         </div>
                         <hr>
                         
                         <div class="form-group row mb-0">
-                            <label for="inputEmail3" class="text-left text-sm-right col-sm-3 col-md-2 col-form-label">Answer:</label>
-                            
-                            <div class="col-sm-9 col-md-9 mt-2" style="font-size:12px;">
-                                {!! $faqInfo->answer !!}
+                            <label for="key" class="text-left text-sm-right col-sm-3 col-md-2 col-form-label">Answer<code style="color:red !important;">[]</code></label>
+                            <div class="col-sm-9 col-md-6">
+                                <textarea name="answer" id="answer">
+                                </textarea>
                             </div>
                         </div>
                         
@@ -60,7 +61,48 @@
                 }
             });
             
-            
+            $('#answer').summernote({
+                height: '300px',
+                
+                callbacks: {
+                    onBlurCodeview: function() {
+                        let codeviewHtml = $(this).siblings('div.note-editor').find('.note-codable').val();
+                        $(this).val(codeviewHtml);
+                    },
+                    onImageUpload: function(files, editor, welEditable) {
+                        var url= sendFile(files, editor, welEditable);
+                    },
+                    onMediaDelete : function(target) {
+                        //deleteSNImage(target[0].src);
+                    }
+                }
+            });
+            $('#answer').summernote('code', {!! json_encode($faqInfo->answer) !!});
+            function sendFile(files, editor, welEditable) {
+                data = new FormData();
+                //data.append("file", file);
+                var i = 0, len = files.length, img, reader, file;
+                for (var i = 0; i < len; i++) {
+                    file = files[i];
+                    data.append("file[]", file);
+                }
+
+                $.ajax({
+                data: data,
+                type: "POST",
+                url: "/uploadImages",
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function({success, data}) {
+                    data.forEach((element)=>{
+                        var image = $('<img>').attr('src', element ).addClass("img-fluid");
+                        $('#answer').summernote("insertNode", image[0]);
+                    });
+                    
+                }
+                });
+            }
             
             $('.btnClose').on('click', function (e) {
                 window.close();

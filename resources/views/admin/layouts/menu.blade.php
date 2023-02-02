@@ -57,7 +57,22 @@
 								</a>
 							</li>
 						</ul>
-                        
+                        <ul class="nav nav-treeview">
+							<li class="nav-item">
+								<a href="/admin/card/country_list" class="nav-link {{ (request()->routeIs('admin.card.country_list')) ? 'active' : '' }}">
+									<i class="far fa-circle nav-icon"></i>
+									<p>Country List</p>
+								</a>
+							</li>
+						</ul>
+						<ul class="nav nav-treeview">
+							<li class="nav-item">
+								<a href="/admin/card/state_list" class="nav-link {{ (request()->routeIs('admin.card.state_list')) ? 'active' : '' }}">
+									<i class="far fa-circle nav-icon"></i>
+									<p>State List</p>
+								</a>
+							</li>
+						</ul>
 					</li>
                     <li class="nav-item {{ (request()->routeIs('admin.calculate*')) ? 'menu-open' : '' }}">
 						<a href="#" class="nav-link {{ (request()->routeIs('admin.calculate*')) ? 'active' : '' }}"> <i class="fas fa-calculator"></i>
@@ -66,9 +81,9 @@
 						
 						<ul class="nav nav-treeview">
 							<li class="nav-item">
-								<a href="/admin/calculate/trading" class="nav-link {{ (request()->routeIs('admin.calculate.trading_list')) ? 'active' : '' }}">
+								<a href="/admin/calculate/sale" class="nav-link {{ (request()->routeIs('admin.calculate.sale_list')) ? 'active' : '' }}">
 									<i class="far fa-circle nav-icon"></i>
-									<p>구매목록</p>
+									<p>Sale List</p>
 								</a>
 							</li>
 						</ul>

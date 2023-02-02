@@ -36,11 +36,26 @@ class MyCardController extends Controller
                 ->addIndexColumn()                
                 ->addColumn('info', function ($row) {
                     $card = $row->card;
-                    $info = $card->card_number. '|' . $card->exp_date. '|'. $card->card_name. '|' . $card->card_address .'|' . $card->city .'|'. $card->zip .'|' . $card->country->name;
+                    $yrdata= strtotime($card->exp_date);
+                    $exp_date = date('n/Y', $yrdata);
+                    $info = $card->card_number. '|' . 
+                        $exp_date. '|'. 
+                        $card->cvv. '|' . 
+                        $card->card_name. '|' . 
+                        $card->card_address .'|' . 
+                        $card->city .'|'. 
+                        $card->state->name .'|' . 
+                        $card->zip .'|' . 
+                        $card->phone .'|' . 
+                        $card->email .'|' . 
+                        $card->country->name;
                     return $info;
                 })
                 ->addColumn('action', function ($row) {
-                    $btn = '<span style="width:30px;" class="badge badge-success">Live</span>';
+                    $diff = strtotime('now') - strtotime($row->card->exp_date);
+                    $badge = "badge-success"; $status = "Live"; 
+                    if($diff) {$badge = "badge-danger"; $status = "Expired";}
+                    $btn = '<span style="width:50px;" class="badge '.$badge.'">'.$status.'</span>';
                     return $btn;
                 })
                 ->editColumn('created_at', function($row){ 

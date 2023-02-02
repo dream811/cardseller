@@ -94,10 +94,12 @@
         }).buttons().container().appendTo('#coinTable_wrapper .col-md-6:eq(0)');
         // $('body').on('click', '.btnEdit', function () {
         //     var coinId = $(this).attr('data-id');
-        //     window.open('/admin/coin/edit/' + coinId, '정보 수정', 'scrollbars=1, resizable=1, width=1000, height=620');
+        //     window.open('/admin/coin/edit/' + coinId, '', 'scrollbars=1, resizable=1, width=1000, height=620');
         //     return false;
         // });
-        
+        $('body').on('click', '.btnCheck', function () {
+            refreshTable();
+        });
         $('body').on('click', '.btnNew', function () {
             
             var card = $(this);

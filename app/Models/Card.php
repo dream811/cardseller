@@ -14,7 +14,12 @@ class Card extends Model
     protected $fillable = [
         'image',
         'type',
-        'bin',
+        'cvv',
+        'name',
+        'email',
+        'phone',
+        'card_number',
+        'card_address',
         'exp_date',
         'category',
         'price',

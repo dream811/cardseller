@@ -179,7 +179,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                     src="{{asset('user_assets/images/logo.png')}}"
                                 @endif
                                 class="user-image img-circle elevation-2" alt="User Image">
-                                <span class="d-none d-md-inline">{{ Auth::user()->name }}</span>
+                                <span class="d-none d-md-inline">{{ Auth::user()->str_id }}</span>
                                 
                         </a>
                         <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
@@ -195,13 +195,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                     class="img-circle elevation-2"
                                     alt="User Image">
                                 <p>
-                                    {{ Auth::user()->name }}
+                                    {{ Auth::user()->str_id }}
                                     <small>Join Date: {{ Auth::user()->created_at->format('Y-m-d') }}</small>
                                 </p>
                             </li>
                             <!-- Menu Footer-->
                             <li class="user-footer">
-                                <a href="#" class="btn btn-default btn-xs btn-flat">My Info</a>
+                                <a href="/admin/mypage" class="btn btn-default btn-xs btn-flat">My Info</a>
                                 <a href="#" class="btn btn-default btn-xs btn-flat float-right"
                                 onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                     Log out

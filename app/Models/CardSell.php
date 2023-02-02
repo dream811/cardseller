@@ -15,6 +15,7 @@ class CardSell extends Model
         'user_id',
         'card_id',
         'cur_price',
+        'info',
         'is_del',
     ];
 

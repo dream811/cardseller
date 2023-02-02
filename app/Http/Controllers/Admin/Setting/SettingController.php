@@ -68,7 +68,7 @@ class SettingController extends Controller
      */
     public function guide(Request $request)
     {
-        $title = "거래방법";
+        $title = "Guide";
         $guide = Setting::first()->guide;
         return view('admin.setting.guide', compact('title', 'guide'));
     }
@@ -100,7 +100,7 @@ class SettingController extends Controller
      */
     public function bank(Request $request)
     {
-        $title = "은행업무설정";
+        $title = "APIRONE";
         $setting = Setting::first();
         return view('admin.setting.bank', compact('title', 'setting'));
     }
@@ -113,19 +113,13 @@ class SettingController extends Controller
     public function saveBank(Request $request)
     {
         
-        $bank_info = $request->post('bank_info');
-        $deposit_from = $request->post('deposit_from');
-        $deposit_to = $request->post('deposit_to');
-        $withdraw_from = $request->post('withdraw_from');
-        $withdraw_to = $request->post('withdraw_to');
+        $apirone_account = $request->post('apirone_account');
+        $apirone_trans_key = $request->post('apirone_trans_key');
         Setting::updateOrCreate(
             ['id' => 1],
             [
-                'bank_info' => $bank_info,
-                'deposit_from' => $deposit_from,
-                'deposit_to' => $deposit_to,
-                'withdraw_from' => $withdraw_from,
-                'withdraw_to' => $withdraw_to,
+                'apirone_account' => $apirone_account,
+                'apirone_trans_key' => $apirone_trans_key,
             ]
         );
         
